@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -12,7 +13,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI coinsText;
     
     [Header("Animated Textures")]
-    public Material questionBoxMaterial;
+    public List<Material> animatedMaterials;
+    public List<Vector2> animationOffsets;
 
     private float _timestamp;
     private Camera _cam;
@@ -26,7 +28,16 @@ public class GameManager : MonoBehaviour
         
         _timestamp = Time.realtimeSinceStartup;
         _cam = Camera.main;
-        questionBoxMaterial.mainTextureOffset = new Vector2(-1, -0.2f);
+        
+        if (animatedMaterials.Count != animationOffsets.Count)
+        {
+            Debug.LogError("Animated materials and animation offsets lists must have the same size");
+        }
+        
+        foreach (var material in animatedMaterials)
+        {
+            material.mainTextureOffset = new Vector2(0, 0);
+        }
     }
 
     void Update()
@@ -47,7 +58,11 @@ public class GameManager : MonoBehaviour
     {
         if (!(Time.realtimeSinceStartup > _timestamp)) return;
         _timestamp = Time.realtimeSinceStartup + 1;
-        questionBoxMaterial.mainTextureOffset -= new Vector2 (0, 0.2f);
+        
+        for (int i = 0; i < animatedMaterials.Count; i++)
+        {
+            animatedMaterials[i].mainTextureOffset += animationOffsets[i];
+        }
     }
 
     private void UpdateRayCast()
@@ -57,7 +72,7 @@ public class GameManager : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             GameObject hitObject = hit.collider.gameObject;
-            Debug.Log($"Hit object: {hitObject.name}");
+            //Debug.Log($"Hit object: {hitObject.name}");
             if (hitObject.CompareTag("Breakable"))
             {
                 Destroy(hitObject);

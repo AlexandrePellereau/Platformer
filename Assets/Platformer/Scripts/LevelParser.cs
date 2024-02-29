@@ -77,7 +77,7 @@ public class LevelParser : MonoBehaviour
                         break;
                 }
                 Vector3 newPos = new Vector3(column + 0.5f, row + 0.5f, 0);
-                if (prefab != null)
+                if (prefab is not null)
                     Instantiate(prefab, newPos, Quaternion.identity, environmentRoot);
             }
             row++;
