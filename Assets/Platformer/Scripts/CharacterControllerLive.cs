@@ -11,15 +11,18 @@ public class CharacterControllerLive : MonoBehaviour
     
     private Rigidbody _rigidbody;
     private Collider _collider;
+    private Animator _animator;
     
     private void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
+        _animator = GetComponent<Animator>();
     }
     
     void Update()
     {
+                
         float horizontalMovement = Input.GetAxis("Horizontal");
         _rigidbody.velocity += Vector3.right * (horizontalMovement * acceleration * Time.deltaTime);
 
@@ -42,7 +45,7 @@ public class CharacterControllerLive : MonoBehaviour
             Vector3 newVelocity = _rigidbody.velocity;
             newVelocity.x = Math.Clamp(newVelocity.x, -maxSpeed, maxSpeed);
             _rigidbody.velocity = newVelocity;
-        }
+        }   
         
         if (isGrounded && Math.Abs(horizontalMovement) < 0.5f)
         {
@@ -53,5 +56,7 @@ public class CharacterControllerLive : MonoBehaviour
         
         float yaw = _rigidbody.velocity.x > 0 ? 90 : -90;
         transform.rotation = Quaternion.Euler(0, yaw, 0);
+        
+        _animator.SetFloat("Speed", Math.Abs(_rigidbody.velocity.x));
     }
 }
