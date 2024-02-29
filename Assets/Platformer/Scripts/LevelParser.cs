@@ -1,19 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public class LevelParser : MonoBehaviour
 {
+    private int _level;
+    private const int MaxLevel = 3;
+
     public string filename;
-    public GameObject rockPrefab;
-    public GameObject brickPrefab;
-    public GameObject questionBoxPrefab;
-    public GameObject stonePrefab;
+    public List<char> letters;
+    public List<GameObject> prefabs;
     public Transform environmentRoot;
 
     // --------------------------------------------------------------------------
     void Start()
     {
+        _level = 1;
+        
+        if (letters.Count != prefabs.Count)
+        {
+            Debug.LogError("Letters and prefabs lists must have the same size");
+        }
         LoadLevel();
     }
 
@@ -42,7 +51,7 @@ public class LevelParser : MonoBehaviour
             {
                 levelRows.Push(line);
             }
-
+            
             sr.Close();
         }
         
@@ -53,32 +62,17 @@ public class LevelParser : MonoBehaviour
         {
             string currentLine = levelRows.Pop();
 
-            char[] letters = currentLine.ToCharArray();
-            for (int column = 0; column < letters.Length; column++)
+            char[] line = currentLine.ToCharArray();
+            for (int column = 0; column < line.Length; column++)
             {
-                var letter = letters[column];
-                // Todo - Instantiate a new GameObject that matches the type specified by letter
-                // Todo - Position the new GameObject at the appropriate location by using row and column
-                // Todo - Parent the new GameObject under levelRoot
-                GameObject prefab = null;
-                switch (letter)
-                {
-                    case 'x':
-                        prefab = rockPrefab;
-                        break;
-                    case 'b':
-                        prefab = brickPrefab;
-                        break;
-                    case '?':
-                        prefab = questionBoxPrefab;
-                        break;
-                    case 's':
-                        prefab = stonePrefab;
-                        break;
-                }
-                Vector3 newPos = new Vector3(column + 0.5f, row + 0.5f, 0);
-                if (prefab is not null)
-                    Instantiate(prefab, newPos, Quaternion.identity, environmentRoot);
+                char letter = line[column];
+                if (!letters.Contains(letter))
+                    continue;
+                
+                GameObject prefab = prefabs[letters.IndexOf(letter)];
+                Vector3 scale = prefab.transform.localScale;
+                Vector3 newPos = new Vector3(column + scale.x / 2, row + scale.y / 2, 0);
+                Instantiate(prefab, newPos, Quaternion.identity, environmentRoot);
             }
             row++;
         }
@@ -92,5 +86,19 @@ public class LevelParser : MonoBehaviour
            Destroy(child.gameObject);
         }
         LoadLevel();
+    }
+
+    public void NextLevel()
+    {
+        if (_level == MaxLevel)
+        {
+            _level = 1;
+        }
+        else
+        {
+            _level++;
+        }
+        filename = $"level_{_level}";
+        ReloadLevel();
     }
 }
