@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     [Header("Texts")]
     public TextMeshProUGUI timeText;
+    public TextMeshProUGUI timeoutText;
     public TextMeshProUGUI worldText;
     public TextMeshProUGUI characterText;
     public TextMeshProUGUI scoreText;
@@ -18,13 +19,15 @@ public class GameManager : MonoBehaviour
 
     private float _timestamp;
     private Camera _cam;
+    private int _score;
+    private int _coins;
 
     private void Start()
     {
         worldText.text = "World \n 1-1";
         characterText.text = "Mario";
         scoreText.text = "000000";
-        coinsText.text = "00";
+        coinsText.text = "x00";
         
         _timestamp = Time.realtimeSinceStartup;
         _cam = Camera.main;
@@ -44,14 +47,36 @@ public class GameManager : MonoBehaviour
     {
         UpdateGUI();
         UpdateAnimatedTexture();
-        UpdateRayCast();
+    }
+    
+    public void AddCoin()
+    {
+        _coins++;
+        coinsText.text = $"x{_coins:00}";
+    }
+    
+    public void AddScore(int score)
+    {
+        _score += score;
+        scoreText.text = _score.ToString("D6");
+    }
+    
+    public void ResetTime()
+    {
+        _timestamp = Time.realtimeSinceStartup;
     }
 
     private void UpdateGUI()
     {
-        int intTime = 400 - (int)Time.realtimeSinceStartup;
+        int intTime = 100 - (int)Time.realtimeSinceStartup;
         string timeStr = $"Time \n {intTime}";
         timeText.text = timeStr;
+        
+        if (intTime <= 0)
+        {
+            timeText.text = "Time \n 0000";
+            timeoutText.gameObject.SetActive(true);
+        }
     }
     
     private void UpdateAnimatedTexture()
@@ -65,6 +90,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /*legacy breakable bricks
     private void UpdateRayCast()
     {
         if (!Input.GetMouseButtonDown(0)) return;
@@ -79,4 +105,5 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    */
 }

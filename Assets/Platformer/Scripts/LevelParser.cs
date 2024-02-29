@@ -17,7 +17,8 @@ public class LevelParser : MonoBehaviour
     // --------------------------------------------------------------------------
     void Start()
     {
-        _level = 1;
+        _level = 0;
+        NextLevel();
         
         if (letters.Count != prefabs.Count)
         {
@@ -100,5 +101,6 @@ public class LevelParser : MonoBehaviour
         }
         filename = $"level_{_level}";
         ReloadLevel();
+        FindObjectOfType<GameManager>().ResetTime();
     }
 }
