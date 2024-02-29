@@ -8,8 +8,8 @@ public class LevelParser : MonoBehaviour
 {
     private int _level;
     private const int MaxLevel = 3;
-
-    public string filename;
+    private string _filename;
+    
     public List<char> letters;
     public List<GameObject> prefabs;
     public Transform environmentRoot;
@@ -17,14 +17,11 @@ public class LevelParser : MonoBehaviour
     // --------------------------------------------------------------------------
     void Start()
     {
+        if (letters.Count != prefabs.Count)
+            Debug.LogError("Letters and prefabs lists must have the same size");
+        
         _level = 0;
         NextLevel();
-        
-        if (letters.Count != prefabs.Count)
-        {
-            Debug.LogError("Letters and prefabs lists must have the same size");
-        }
-        LoadLevel();
     }
 
     // --------------------------------------------------------------------------
@@ -39,7 +36,7 @@ public class LevelParser : MonoBehaviour
     // --------------------------------------------------------------------------
     private void LoadLevel()
     {
-        string fileToParse = $"{Application.dataPath}{"/Resources/"}{filename}.txt";
+        string fileToParse = $"{Application.dataPath}{"/Resources/"}{_filename}.txt";
         Debug.Log($"Loading level file: {fileToParse}");
 
         Stack<string> levelRows = new Stack<string>();
@@ -99,8 +96,10 @@ public class LevelParser : MonoBehaviour
         {
             _level++;
         }
-        filename = $"level_{_level}";
+        _filename = $"level_{_level}";
         ReloadLevel();
-        FindObjectOfType<GameManager>().ResetTime();
+        FindObjectOfType<GameManager>().TimeReset();
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        player.transform.position = new Vector3(4.5f, 2.2f, 0);
     }
 }

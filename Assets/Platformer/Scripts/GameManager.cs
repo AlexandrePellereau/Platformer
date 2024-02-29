@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Texts")]
     public TextMeshProUGUI timeText;
-    public TextMeshProUGUI timeoutText;
+    public GameObject gameOver;
     public TextMeshProUGUI worldText;
     public TextMeshProUGUI characterText;
     public TextMeshProUGUI scoreText;
@@ -55,13 +56,19 @@ public class GameManager : MonoBehaviour
         coinsText.text = $"x{_coins:00}";
     }
     
+    public void GameOver()
+    {
+        gameOver.SetActive(true);
+        GameObject.FindWithTag("Player").SetActive(false);
+    }
+    
     public void AddScore(int score)
     {
         _score += score;
         scoreText.text = _score.ToString("D6");
     }
     
-    public void ResetTime()
+    public void TimeReset()
     {
         _timestamp = Time.realtimeSinceStartup;
     }
@@ -75,7 +82,7 @@ public class GameManager : MonoBehaviour
         if (intTime <= 0)
         {
             timeText.text = "Time \n 0000";
-            timeoutText.gameObject.SetActive(true);
+            GameOver();
         }
     }
     
